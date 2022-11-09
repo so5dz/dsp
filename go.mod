@@ -1,3 +1,3 @@
-module github.com/iskrapw/filters
+module github.com/iskrapw/dsp
 
 go 1.18
