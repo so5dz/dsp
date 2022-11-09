@@ -1,4 +1,4 @@
-package dsp
+package chebyshev
 
 import "math"
 

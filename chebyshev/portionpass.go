@@ -1,8 +1,8 @@
-package dsp
+package chebyshev
 
 import "math"
 
-type chebyshevPortionPass struct {
+type portionPass struct {
 	m  int
 	ep float64
 	A  []float64
@@ -13,7 +13,7 @@ type chebyshevPortionPass struct {
 	w2 []float64
 }
 
-func (b *chebyshevPortionPass) setup(order int) {
+func (b *portionPass) setup(order int) {
 	b.m = order / 2
 	b.A = make([]float64, b.m)
 	b.d1 = make([]float64, b.m)
@@ -23,15 +23,15 @@ func (b *chebyshevPortionPass) setup(order int) {
 	b.w2 = make([]float64, b.m)
 }
 
-type ChebyshevLowPass struct {
-	chebyshevPortionPass
+type LowPass struct {
+	portionPass
 }
 
-type ChebyshevHighPass struct {
-	chebyshevPortionPass
+type HighPass struct {
+	portionPass
 }
 
-func (filter *ChebyshevLowPass) Setup(order int, epsilon float64, sampleRate float64, frequency float64) {
+func (filter *LowPass) Setup(order int, epsilon float64, sampleRate float64, frequency float64) {
 	filter.setup(order)
 
 	a := math.Tan(math.Pi * frequency / sampleRate)
@@ -56,7 +56,7 @@ func (filter *ChebyshevLowPass) Setup(order int, epsilon float64, sampleRate flo
 	filter.ep = 2 / epsilon
 }
 
-func (filter *ChebyshevHighPass) Setup(order int, epsilon float64, sampleRate float64, frequency float64) {
+func (filter *HighPass) Setup(order int, epsilon float64, sampleRate float64, frequency float64) {
 	filter.setup(order)
 
 	a := math.Tan(math.Pi * frequency / sampleRate)
@@ -80,7 +80,7 @@ func (filter *ChebyshevHighPass) Setup(order int, epsilon float64, sampleRate fl
 	filter.ep = 2 / epsilon
 }
 
-func (filter *ChebyshevLowPass) Filter(x float64) float64 {
+func (filter *LowPass) Filter(x float64) float64 {
 	for i := 0; i < filter.m; i++ {
 		filter.w0[i] = filter.d1[i]*filter.w1[i] + filter.d2[i]*filter.w2[i] + x
 		x = filter.A[i] * (filter.w0[i] + 2*filter.w1[i] + filter.w2[i])
@@ -90,7 +90,7 @@ func (filter *ChebyshevLowPass) Filter(x float64) float64 {
 	return x * filter.ep
 }
 
-func (filter *ChebyshevHighPass) Filter(x float64) float64 {
+func (filter *HighPass) Filter(x float64) float64 {
 	for i := 0; i < filter.m; i++ {
 		filter.w0[i] = filter.d1[i]*filter.w1[i] + filter.d2[i]*filter.w2[i] + x
 		x = filter.A[i] * (filter.w0[i] - 2*filter.w1[i] + filter.w2[i])
