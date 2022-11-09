@@ -2,7 +2,7 @@ package butterworth
 
 import "math"
 
-type portionPass struct {
+type portionPassBase struct {
 	n  int
 	A  []float64
 	d1 []float64
@@ -12,7 +12,7 @@ type portionPass struct {
 	w2 []float64
 }
 
-func (b *portionPass) setup(order int) {
+func (b *portionPassBase) setup(order int) {
 	b.n = order / 2
 	b.A = make([]float64, b.n)
 	b.d1 = make([]float64, b.n)
@@ -23,11 +23,11 @@ func (b *portionPass) setup(order int) {
 }
 
 type LowPass struct {
-	portionPass
+	portionPassBase
 }
 
 type HighPass struct {
-	portionPass
+	portionPassBase
 }
 
 func (b *LowPass) Setup(order int, sampleRate float64, frequency float64) {

@@ -2,7 +2,7 @@ package chebyshev
 
 import "math"
 
-type portionPass struct {
+type portionPassBase struct {
 	m  int
 	ep float64
 	A  []float64
@@ -13,7 +13,7 @@ type portionPass struct {
 	w2 []float64
 }
 
-func (b *portionPass) setup(order int) {
+func (b *portionPassBase) setup(order int) {
 	b.m = order / 2
 	b.A = make([]float64, b.m)
 	b.d1 = make([]float64, b.m)
@@ -24,11 +24,11 @@ func (b *portionPass) setup(order int) {
 }
 
 type LowPass struct {
-	portionPass
+	portionPassBase
 }
 
 type HighPass struct {
-	portionPass
+	portionPassBase
 }
 
 func (filter *LowPass) Setup(order int, epsilon float64, sampleRate float64, frequency float64) {

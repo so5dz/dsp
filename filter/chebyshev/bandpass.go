@@ -2,7 +2,7 @@ package chebyshev
 
 import "math"
 
-type chebyshevBandPass struct {
+type bandPassBase struct {
 	m  int
 	ep float64
 	A  []float64
@@ -17,7 +17,7 @@ type chebyshevBandPass struct {
 	w4 []float64
 }
 
-func (filter *chebyshevBandPass) setup(order int) {
+func (filter *bandPassBase) setup(order int) {
 	filter.m = order / 4
 	filter.A = make([]float64, filter.m)
 	filter.d1 = make([]float64, filter.m)
@@ -31,11 +31,11 @@ func (filter *chebyshevBandPass) setup(order int) {
 	filter.w4 = make([]float64, filter.m)
 }
 
-type ChebyshevBandPass struct {
-	chebyshevBandPass
+type BandPass struct {
+	bandPassBase
 }
 
-func (filter *ChebyshevBandPass) Setup(order int, epsilon float64, sampleRate float64, low float64, high float64) {
+func (filter *BandPass) Setup(order int, epsilon float64, sampleRate float64, low float64, high float64) {
 	filter.setup(order)
 
 	a := math.Cos(math.Pi*(low+high)/sampleRate) / math.Cos(math.Pi*(high-low)/sampleRate)
@@ -63,7 +63,7 @@ func (filter *ChebyshevBandPass) Setup(order int, epsilon float64, sampleRate fl
 	filter.ep = 2 / epsilon
 }
 
-func (filter *ChebyshevBandPass) Filter(x float64) float64 {
+func (filter *BandPass) Filter(x float64) float64 {
 	for i := 0; i < filter.m; i++ {
 		filter.w0[i] = filter.d1[i]*filter.w1[i] + filter.d2[i]*filter.w2[i] + filter.d3[i]*filter.w3[i] + filter.d4[i]*filter.w4[i] + x
 		x = filter.A[i] * (filter.w0[i] - 2*filter.w2[i] + filter.w4[i])

@@ -2,7 +2,7 @@ package butterworth
 
 import "math"
 
-type butterworthBandPass struct {
+type bandPassBase struct {
 	n  int
 	A  []float64
 	d1 []float64
@@ -16,7 +16,7 @@ type butterworthBandPass struct {
 	w4 []float64
 }
 
-func (b *butterworthBandPass) setup(order int) {
+func (b *bandPassBase) setup(order int) {
 	b.n = order / 4
 	b.A = make([]float64, b.n)
 	b.d1 = make([]float64, b.n)
@@ -30,11 +30,11 @@ func (b *butterworthBandPass) setup(order int) {
 	b.w4 = make([]float64, b.n)
 }
 
-type ButterworthBandPass struct {
-	butterworthBandPass
+type BandPass struct {
+	bandPassBase
 }
 
-func (bpf *ButterworthBandPass) Setup(order int, sampleRate float64, low float64, high float64) {
+func (bpf *BandPass) Setup(order int, sampleRate float64, low float64, high float64) {
 	bpf.setup(order)
 
 	a := math.Cos(math.Pi*(high+low)/sampleRate) / math.Cos(math.Pi*(high-low)/sampleRate)
@@ -54,7 +54,7 @@ func (bpf *ButterworthBandPass) Setup(order int, sampleRate float64, low float64
 	}
 }
 
-func (bpf *ButterworthBandPass) Filter(x float64) float64 {
+func (bpf *BandPass) Filter(x float64) float64 {
 	for i := 0; i < bpf.n; i++ {
 		bpf.w0[i] = bpf.d1[i]*bpf.w1[i] + bpf.d2[i]*bpf.w2[i] + bpf.d3[i]*bpf.w3[i] + bpf.d4[i]*bpf.w4[i] + x
 		x = bpf.A[i] * (bpf.w0[i] - 2*bpf.w2[i] + bpf.w4[i])
